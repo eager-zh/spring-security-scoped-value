@@ -33,12 +33,28 @@
 
 	<build>
 		<plugins>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<release>${java.version}</release>
+					<enablePreview>true</enablePreview>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>3.1.0</version>
 				<configuration>
-					<mainClass>com.github.spring.security.SpringSecurityScopedValueApplication</mainClass>
+					<executable>java</executable>
+					<arguments>
+						<argument>--enable-preview</argument>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>com.github.spring.security.SpringSecurityScopedValueApplication</argument>
+					</arguments>
 				</configuration>
 			</plugin>
 
@@ -46,6 +62,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			
 		</plugins>
 	</build>
 
