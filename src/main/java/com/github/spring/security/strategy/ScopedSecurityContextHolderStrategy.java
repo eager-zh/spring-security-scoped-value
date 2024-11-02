@@ -1,5 +1,6 @@
 package com.github.spring.security.strategy;
 
+import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -11,6 +12,13 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	private static class SecurityContextScopedValueHolder {
 		
 		private SecurityContext securityContext;
+
+		public SecurityContextScopedValueHolder() {
+		}
+
+		public SecurityContextScopedValueHolder(SecurityContext securityContext) {
+			this.securityContext = securityContext;
+		}
 
 		public SecurityContext getSecurityContext() {
 			return securityContext;
@@ -24,7 +32,13 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	
 	@Override
 	public void clearContext() {
-		retrieveSecurityContextScopedValueHolder().setSecurityContext(null);
+		if (SECURITY_CONTEXT.isBound()) {
+			// otherwise, if Scoped Security Context Filter is used,
+			// we have unbound ISE upon a call securityContextHolderStrategy.clearContext(); 
+			// in FilterChainProxy.doFilter.
+			// This check is unnecessary if Scoped Value is engaged in Tomcat Thread Executor 
+			retrieveSecurityContextScopedValueHolder().setSecurityContext(null);
+		}
 	}
 
 	@Override
@@ -52,6 +66,10 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	
 	public static ScopedValue.Carrier getSecuriyContextCarrier() {
 		return ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder());
+	}
+
+	public static void runWhere(DeferredSecurityContext deferredContext, Runnable r) {
+		ScopedValue.runWhere(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get()), r);
 	}
 
 }
