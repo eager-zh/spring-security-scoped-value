@@ -43,9 +43,15 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 
 	@Override
 	public SecurityContext getContext() {
-		return retrieveSecurityContextScopedValueHolder().getSecurityContext();
+		final SecurityContextScopedValueHolder holder = retrieveSecurityContextScopedValueHolder();
+		SecurityContext context = holder.getSecurityContext();
+		if (context == null) {
+			context = createEmptyContext();
+			holder.setSecurityContext(context);
+		}
+		return context;
 	}
-
+	
 	@Override
 	public void setContext(SecurityContext context) {
 		retrieveSecurityContextScopedValueHolder().setSecurityContext(context);
