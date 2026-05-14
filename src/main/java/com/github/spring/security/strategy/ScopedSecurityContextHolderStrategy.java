@@ -69,7 +69,7 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	}
 
 	public static void runWhere(DeferredSecurityContext deferredContext, Runnable r) {
-		ScopedValue.runWhere(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get()), r);
+		ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get())).run(r);
 	}
 
 }
