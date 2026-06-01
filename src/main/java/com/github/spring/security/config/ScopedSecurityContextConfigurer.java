@@ -11,9 +11,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import com.github.spring.security.filter.ScopedSecurityContextHolderFilter;
 
 /**
- * Installs {@link ScopedSecurityContextHolderFilter} in front of 
- * {@link org.springframework.security.web.context.SecurityContextHolderFilter SecurityContextHolderFilter}.
- * See {@link ScopedSecurityContextHolderFilter} for the details.
+ * An HTTP Configurer which instantiates {@link ScopedSecurityContextHolderFilter} 
+ * and adds it to HTTP Security Builder.
  */
 public final class ScopedSecurityContextConfigurer<H extends HttpSecurityBuilder<H>>
 		extends AbstractHttpConfigurer<ScopedSecurityContextConfigurer<H>, H> {
@@ -34,7 +33,7 @@ public final class ScopedSecurityContextConfigurer<H extends HttpSecurityBuilder
 
 	@Override
 	public void configure(H http) {
-		final SecurityContextHolderFilter securityContextHolderFilter = 
+		final ScopedSecurityContextHolderFilter securityContextHolderFilter = 
 			postProcess(new ScopedSecurityContextHolderFilter(getSecurityContextRepository()));
 		securityContextHolderFilter.setSecurityContextHolderStrategy(getSecurityContextHolderStrategy());
 		http.addFilterBefore(securityContextHolderFilter, SecurityContextHolderFilter.class);

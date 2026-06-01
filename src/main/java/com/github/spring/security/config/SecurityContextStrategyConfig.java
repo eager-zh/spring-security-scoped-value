@@ -7,6 +7,10 @@ import com.github.spring.security.strategy.ScopedSecurityContextHolderStrategy;
 
 import jakarta.annotation.PostConstruct;
 
+/**
+ * Sets {@link ScopedSecurityContextHolderStrategy} as current 
+ * {@link org.springframework.security.core.context.SecurityContextHolderStrategy SecurityContextHolderStrategy}.
+ */
 @Configuration
 public class SecurityContextStrategyConfig {
 	

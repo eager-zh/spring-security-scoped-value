@@ -5,10 +5,27 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.core.context.SecurityContextImpl;
 
+/**
+ * A <code>ScopedValue</code>-based implementation of
+ * {@link SecurityContextHolderStrategy}.
+ *
+ * @see java.lang.ScopedValue
+ * @see com.github.spring.security.filter.ScopedSecurityContextHolderFilter
+ * @see com.github.spring.security.config.TomcatVirtualThreadExecutorCustomizer 
+ */
 public class ScopedSecurityContextHolderStrategy implements SecurityContextHolderStrategy {
 	
+	/**
+	 * An instance of {@link ScopedValue} which has to be bound to an instance 
+	 * of {@link SecurityContextScopedValueHolder}.
+	 */
 	private static final ScopedValue<SecurityContextScopedValueHolder> SECURITY_CONTEXT = ScopedValue.newInstance();
 
+	/**
+	 * A structure that holds {@link SecurityContext}.
+	 * An instance of {@link ScopedValue}, {@link ScopedSecurityContextHolderStrategy#SECURITY_CONTEXT}, 
+	 * has to be bound to an instance of this class. 
+	 */
 	private static class SecurityContextScopedValueHolder {
 		
 		private SecurityContext securityContext;
@@ -70,12 +87,20 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 		}
 	}
 	
-	public static ScopedValue.Carrier getSecuriyContextCarrier() {
-		return ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder());
-	}
-
+	/**
+	 * Binds an instance of {@link ScopedValue}, {@link ScopedSecurityContextHolderStrategy#SECURITY_CONTEXT}, 
+	 * to an instance of {@link SecurityContextScopedValueHolder} 
+	 * <i>for current thread</i>.
+	 */
 	public static void runWhere(DeferredSecurityContext deferredContext, Runnable r) {
 		ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get())).run(r);
+	}
+	
+	/**
+	 * A convenience version of {@link #runWhere(DeferredSecurityContext, Runnable)} method.
+	 */
+	public static ScopedValue.Carrier getSecuriyContextCarrier() {
+		return ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder());
 	}
 
 }

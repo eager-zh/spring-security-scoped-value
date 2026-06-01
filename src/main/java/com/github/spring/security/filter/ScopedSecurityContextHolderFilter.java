@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.util.Assert;
+import org.springframework.web.filter.GenericFilterBean;
 
 import com.github.spring.security.strategy.ScopedSecurityContextHolderStrategy;
 
@@ -19,23 +20,28 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Most of this code is adopted from Spring's {@link SecurityContextHolderFilter}.
+ * A Spring Security filter which 
+ * orchestrates the usage of {@link ScopedSecurityContextHolderStrategy}
+ * 
+ * Due to the nature of {@link ScopedValue}, 
+ * the generic {@link SecurityContextHolderFilter}, is not suitable for this purpose
+ * because {@link jakarta.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)}
+ * method has to be invoked under <code>ScopedValue.Carrier.run</code> method. 
+ * 
+ * <p></p>
+ * Most of the code, however, is adopted from {@link SecurityContextHolderFilter}.
+ * The only difference is the implementation of 
+ * {@link FilterChain#doFilter(ServletRequest, ServletResponse)} method.
  */
-public class ScopedSecurityContextHolderFilter extends SecurityContextHolderFilter {
+public class ScopedSecurityContextHolderFilter extends GenericFilterBean {
 	
-	/**
-	 * The marker string duplicates its namesake from {@link SecurityContextHolderFilter} intentionally.
-	 * This allows to effectively turn off the functionality of {@link SecurityContextHolderFilter}, 
-	 * if it is present in the filter chain; if it is not, then it does not do any harm.  
-	 */
-	private static final String FILTER_APPLIED = SecurityContextHolderFilter.class.getName() + ".APPLIED";
+	private static final String FILTER_APPLIED = ScopedSecurityContextHolderFilter.class.getName() + ".APPLIED";
 	
 	private final SecurityContextRepository securityContextRepository;
 	
 	private ScopedSecurityContextHolderStrategy securityContextHolderStrategy; 
 
 	public ScopedSecurityContextHolderFilter(SecurityContextRepository securityContextRepository) {
-		super(securityContextRepository);
 		this.securityContextRepository = securityContextRepository;
 		setSecurityContextHolderStrategy(SecurityContextHolder.getContextHolderStrategy());
 	}	
@@ -71,6 +77,7 @@ public class ScopedSecurityContextHolderFilter extends SecurityContextHolderFilt
 				throw (IOException)cause;
 			throw e;
 		} finally {
+			securityContextHolderStrategy.clearContext();
 			request.removeAttribute(FILTER_APPLIED);
 		}
 	}	
