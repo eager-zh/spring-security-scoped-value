@@ -1,13 +1,13 @@
 package com.github.spring.security.schedule;
 
-import com.github.spring.security.strategy.ScopedSecurityContextHolderStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskDecorator;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+
+import com.github.spring.security.strategy.ScopedSecurityContextHolderStrategy;
 
 @Configuration(proxyBeanMethods = false)
 public class TaskDecoratorConfiguration {
@@ -27,20 +27,10 @@ public class TaskDecoratorConfiguration {
         };
     }
 
-    // @Bean
-    TaskDecorator securityTaskDecorator() {
-        return (runnable) -> {
-            // The original SecurityContextHolderStrategy is compatible; the context is guaranteed to have a value, and no exception will be thrown.
-            // If the default strategy inside SecurityContextHolder is changed to ScopedSecurityContextHolderStrategy, an exception will be thrown, resulting in incompatibility.
-            SecurityContext context = SecurityContextHolder.getContext();
-            return () -> {
-                try {
-                    ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
-                } finally {
-                    SecurityContextHolder.clearContext();
-                }
-            };
-        };
+    @Bean
+    @Primary
+    public TaskDecorator securityTaskDecorator() {
+		return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
     }
 
 }

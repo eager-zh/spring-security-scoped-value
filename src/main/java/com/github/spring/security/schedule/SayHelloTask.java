@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.security.Principal;
 import java.util.Optional;
 
-// @Component
+@Component
 @EnableScheduling
 public class SayHelloTask {
 
