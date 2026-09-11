@@ -21,23 +21,23 @@ public class AsyncConfiguration implements AsyncConfigurer, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(AsyncConfiguration.class);
 
-    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    private Executor executor;
 
     @Autowired
     @Qualifier(TaskExecutorConfiguration.ASYNC_DELEGATING_SECURITY_CONTEXT_TASK_EXECUTOR_BEAN_NAME)
-    public void setAsyncTaskExecutor(ThreadPoolTaskExecutor threadPoolTaskExecutor) {
-        Assert.notNull(threadPoolTaskExecutor, "'threadPoolTaskExecutor' must be not null");
-        this.threadPoolTaskExecutor = threadPoolTaskExecutor;
+    public void setAsyncTaskExecutor(Executor executor) {
+        Assert.notNull(executor, "'executor' must be not null");
+        this.executor = executor;
     }
 
     @Override
     public void afterPropertiesSet() {
-        Assert.notNull(threadPoolTaskExecutor, "'threadPoolTaskExecutor' must be not null");
+        Assert.notNull(executor, "'executor' must be not null");
     }
 
     @Override
     public @Nullable Executor getAsyncExecutor() {
-        return threadPoolTaskExecutor;
+        return executor;
     }
 
     @Override

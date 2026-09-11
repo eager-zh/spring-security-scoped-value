@@ -21,7 +21,8 @@ public class TaskDecoratorConfiguration {
     // However, Spring Boot 3 only supports one, so the following code is used for compatibility handling
     @Bean
     TaskDecorator taskDecorator() {
-        return getTaskDecorator(List.of(requestAttributesTaskDecorator(), securityTaskDecorator()));
+        // return getTaskDecorator(List.of(requestAttributesTaskDecorator(), securityTaskDecorator()));
+        return getTaskDecorator(List.of(requestAttributesTaskDecorator()));
     }
 
     // @Bean
@@ -40,9 +41,9 @@ public class TaskDecoratorConfiguration {
     }
 
     // @Bean
-    TaskDecorator securityTaskDecorator() {
-		return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
-    }
+    // TaskDecorator securityTaskDecorator() {
+	// 	return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
+    // }
 
     private static @Nullable TaskDecorator getTaskDecorator(List<TaskDecorator> taskDecorators) {
         if (taskDecorators.size() == 1) {
