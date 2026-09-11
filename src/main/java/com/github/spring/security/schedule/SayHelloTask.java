@@ -13,7 +13,6 @@ import java.security.Principal;
 import java.util.Optional;
 
 @Component
-@EnableScheduling
 public class SayHelloTask {
 
     private static final Log log = LogFactory.getLog(SayHelloTask.class);
