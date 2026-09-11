@@ -78,13 +78,17 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	public SecurityContext createEmptyContext() {
 		return new SecurityContextImpl();
 	}
-	
+
 	private SecurityContextScopedValueHolder retrieveSecurityContextScopedValueHolder() {
-		if (SECURITY_CONTEXT.isBound()) {
+		if (isBound()) {
 			return SECURITY_CONTEXT.get();
 		} else {
 			throw new IllegalStateException("Security Context Scoped Value not bound");
 		}
+	}
+
+	public boolean isBound() {
+		return SECURITY_CONTEXT.isBound();
 	}
 	
 	/**

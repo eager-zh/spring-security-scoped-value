@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import java.security.Principal;
 import java.util.Optional;
 
-@Component
+// Because the default scheduled task thread pool has not been set up, the execution here will result in an error. Therefore, it is not going to be used for now.
+// @Component
 public class SayHelloTask {
 
     private static final Log log = LogFactory.getLog(SayHelloTask.class);

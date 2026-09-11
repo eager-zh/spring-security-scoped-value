@@ -40,7 +40,7 @@ public class TaskDecoratorConfiguration {
         };
     }
 
-    // @Bean
+    // // @Bean
     // TaskDecorator securityTaskDecorator() {
 	// 	return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
     // }

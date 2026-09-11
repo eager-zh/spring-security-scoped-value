@@ -94,10 +94,8 @@ public final class DelegatingSecurityContextCallable<V> implements Callable<V> {
 
     @Override
     public V call() throws Exception {
-        this.originalSecurityContext = this.securityContextHolderStrategy.getContext();
+        this.originalSecurityContext = getOriginalSecurityContext();
         try {
-            this.securityContextHolderStrategy.setContext(this.delegateSecurityContext);
-
             if (this.securityContextHolderStrategy instanceof ScopedSecurityContextHolderStrategy) {
                 SupplierDeferredSecurityContext deferredSecurityContext = new SupplierDeferredSecurityContext(() -> this.delegateSecurityContext, this.securityContextHolderStrategy);
                 return ScopedSecurityContextHolderStrategy.callWhere(deferredSecurityContext, () -> {
@@ -112,6 +110,7 @@ public final class DelegatingSecurityContextCallable<V> implements Callable<V> {
                 });
             }
 
+            this.securityContextHolderStrategy.setContext(this.delegateSecurityContext);
             return this.delegate.call();
         } catch (RuntimeException e) {
             Throwable cause = e.getCause();
@@ -130,6 +129,13 @@ public final class DelegatingSecurityContextCallable<V> implements Callable<V> {
             }
             this.originalSecurityContext = null;
         }
+    }
+
+    private SecurityContext getOriginalSecurityContext() {
+        if (this.securityContextHolderStrategy instanceof ScopedSecurityContextHolderStrategy strategy && !strategy.isBound()) {
+            return strategy.createEmptyContext();
+        }
+        return this.securityContextHolderStrategy.getContext();
     }
 
     /**

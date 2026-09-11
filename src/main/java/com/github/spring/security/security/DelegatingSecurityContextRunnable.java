@@ -62,16 +62,15 @@ public final class DelegatingSecurityContextRunnable implements Runnable {
 
     @Override
     public void run() {
-        this.originalSecurityContext = this.securityContextHolderStrategy.getContext();
+        this.originalSecurityContext = getOriginalSecurityContext();
         try {
-            this.securityContextHolderStrategy.setContext(this.delegateSecurityContext);
-
             if (this.securityContextHolderStrategy instanceof ScopedSecurityContextHolderStrategy) {
                 SupplierDeferredSecurityContext deferredSecurityContext = new SupplierDeferredSecurityContext(() -> this.delegateSecurityContext, this.securityContextHolderStrategy);
                 ScopedSecurityContextHolderStrategy.runWhere(deferredSecurityContext, this.delegate);
                 return;
             }
 
+            this.securityContextHolderStrategy.setContext(this.delegateSecurityContext);
             this.delegate.run();
         } finally {
             SecurityContext emptyContext = this.securityContextHolderStrategy.createEmptyContext();
@@ -82,6 +81,13 @@ public final class DelegatingSecurityContextRunnable implements Runnable {
             }
             this.originalSecurityContext = null;
         }
+    }
+
+    private SecurityContext getOriginalSecurityContext() {
+        if (this.securityContextHolderStrategy instanceof ScopedSecurityContextHolderStrategy strategy && !strategy.isBound()) {
+            return strategy.createEmptyContext();
+        }
+        return this.securityContextHolderStrategy.getContext();
     }
 
     /**
