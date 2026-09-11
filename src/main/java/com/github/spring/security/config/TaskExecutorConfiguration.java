@@ -17,6 +17,8 @@ public class TaskExecutorConfiguration {
 
     public static final String ASYNC_TASK_EXECUTOR_BEAN_NAME = "asyncTaskExecutor";
 
+    public static final String ASYNC_DELEGATING_SECURITY_CONTEXT_TASK_EXECUTOR_BEAN_NAME = "asyncDelegatingSecurityContextTaskExecutor";
+
     public static final String FUTURE_TASK_EXECUTOR_BEAN_NAME = "futureTaskExecutor";
 
     // SimpleAsyncTaskExecutorBuilder (ThreadPoolTaskExecutorBuilder, SimpleAsyncTaskSchedulerBuilder, ThreadPoolTaskSchedulerBuilder)
@@ -38,6 +40,11 @@ public class TaskExecutorConfiguration {
                 .build();
     }
 
+    @Bean(ASYNC_DELEGATING_SECURITY_CONTEXT_TASK_EXECUTOR_BEAN_NAME)
+    DelegatingSecurityContextExecutor asyncDelegatingSecurityContextTaskExecutor(@Qualifier(ASYNC_TASK_EXECUTOR_BEAN_NAME) ThreadPoolTaskExecutor taskExecutor) {
+        return new DelegatingSecurityContextExecutor(taskExecutor);
+    }
+
     @Bean(FUTURE_TASK_EXECUTOR_BEAN_NAME)
     ThreadPoolTaskExecutor futureThreadPoolTaskExecutor(ThreadPoolTaskExecutorBuilder builder) {
         return builder
@@ -45,10 +52,10 @@ public class TaskExecutorConfiguration {
                 .build();
     }
 
+
     @Bean
     @FutureTaskExecutor
     DelegatingSecurityContextExecutor futureDelegatingThreadPoolTaskExecutor(@Qualifier(FUTURE_TASK_EXECUTOR_BEAN_NAME) ThreadPoolTaskExecutor taskExecutor) {
         return new DelegatingSecurityContextExecutor(taskExecutor);
     }
-
 }

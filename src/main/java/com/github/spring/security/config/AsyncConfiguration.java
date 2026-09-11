@@ -24,7 +24,7 @@ public class AsyncConfiguration implements AsyncConfigurer, InitializingBean {
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @Autowired
-    @Qualifier(TaskExecutorConfiguration.ASYNC_TASK_EXECUTOR_BEAN_NAME)
+    @Qualifier(TaskExecutorConfiguration.ASYNC_DELEGATING_SECURITY_CONTEXT_TASK_EXECUTOR_BEAN_NAME)
     public void setAsyncTaskExecutor(ThreadPoolTaskExecutor threadPoolTaskExecutor) {
         Assert.notNull(threadPoolTaskExecutor, "'threadPoolTaskExecutor' must be not null");
         this.threadPoolTaskExecutor = threadPoolTaskExecutor;
