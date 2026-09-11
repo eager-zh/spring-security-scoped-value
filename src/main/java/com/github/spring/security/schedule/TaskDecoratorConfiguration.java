@@ -1,18 +1,14 @@
 package com.github.spring.security.schedule;
 
-import org.springframework.beans.factory.ObjectProvider;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.support.CompositeTaskDecorator;
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
-
-import com.github.spring.security.strategy.ScopedSecurityContextHolderStrategy;
-
-import java.util.List;
 
 @Configuration(proxyBeanMethods = false)
 public class TaskDecoratorConfiguration {
@@ -40,6 +36,8 @@ public class TaskDecoratorConfiguration {
         };
     }
 
+    // Non-Spring bean version of the decorator can be used as the decorator is completely stateless
+    // Use ScopedSecurityContextHolderStrategy.getTaskDecorator() instead 
     // // @Bean
     // TaskDecorator securityTaskDecorator() {
 	// 	return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);

@@ -1,5 +1,6 @@
 package com.github.spring.security.strategy;
 
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.security.core.context.DeferredSecurityContext;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -103,6 +104,10 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	public static <R, X extends Throwable> R callWhere(DeferredSecurityContext deferredContext, ScopedValue.CallableOp<? extends R, X> op) throws X {
 		return ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get())).call(op);
 	}
+	
+    public static TaskDecorator getTaskDecorator() {
+	 	return (runnable) -> () -> ScopedSecurityContextHolderStrategy.getSecuriyContextCarrier().run(runnable);
+    }
 	
 	/**
 	 * A convenience version of {@link #runWhere(DeferredSecurityContext, Runnable)} method.

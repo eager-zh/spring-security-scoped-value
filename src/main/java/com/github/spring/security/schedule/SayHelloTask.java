@@ -2,7 +2,6 @@ package com.github.spring.security.schedule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -12,8 +11,7 @@ import org.springframework.stereotype.Component;
 import java.security.Principal;
 import java.util.Optional;
 
-// Because the default scheduled task thread pool has not been set up, the execution here will result in an error. Therefore, it is not going to be used for now.
-// @Component
+@Component
 public class SayHelloTask {
 
     private static final Log log = LogFactory.getLog(SayHelloTask.class);
