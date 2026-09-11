@@ -95,6 +95,10 @@ public class ScopedSecurityContextHolderStrategy implements SecurityContextHolde
 	public static void runWhere(DeferredSecurityContext deferredContext, Runnable r) {
 		ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get())).run(r);
 	}
+
+	public static <R, X extends Throwable> R callWhere(DeferredSecurityContext deferredContext, ScopedValue.CallableOp<? extends R, X> op) throws X {
+		return ScopedValue.where(SECURITY_CONTEXT, new SecurityContextScopedValueHolder(deferredContext.get())).call(op);
+	}
 	
 	/**
 	 * A convenience version of {@link #runWhere(DeferredSecurityContext, Runnable)} method.

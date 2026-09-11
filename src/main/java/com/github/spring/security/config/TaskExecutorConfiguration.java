@@ -1,14 +1,14 @@
 package com.github.spring.security.config;
 
 import com.github.spring.security.annotation.FutureTaskExecutor;
+import com.github.spring.security.security.notmodified.DelegatingSecurityContextExecutor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder;
 import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
-import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration(proxyBeanMethods = false)
 public class TaskExecutorConfiguration {
@@ -16,6 +16,8 @@ public class TaskExecutorConfiguration {
     public static final String MVC_TASK_EXECUTOR_BEAN_NAME = "mvcTaskExecutor";
 
     public static final String ASYNC_TASK_EXECUTOR_BEAN_NAME = "asyncTaskExecutor";
+
+    public static final String FUTURE_TASK_EXECUTOR_BEAN_NAME = "futureTaskExecutor";
 
     // SimpleAsyncTaskExecutorBuilder (ThreadPoolTaskExecutorBuilder, SimpleAsyncTaskSchedulerBuilder, ThreadPoolTaskSchedulerBuilder)
     // These classes have all been successfully auto-configured, and they all support customizers similar to SimpleAsyncTaskExecutorCustomizer, and will also automatically configure TaskDecorator
@@ -31,18 +33,22 @@ public class TaskExecutorConfiguration {
 
     @Bean(ASYNC_TASK_EXECUTOR_BEAN_NAME)
     ThreadPoolTaskExecutor asyncThreadPoolTaskExecutor(ThreadPoolTaskExecutorBuilder builder) {
-        // async-pool-task-executor-
         return builder
                 .threadNamePrefix("async-")
                 .build();
     }
 
-    @Bean
-    @FutureTaskExecutor
+    @Bean(FUTURE_TASK_EXECUTOR_BEAN_NAME)
     ThreadPoolTaskExecutor futureThreadPoolTaskExecutor(ThreadPoolTaskExecutorBuilder builder) {
         return builder
                 .threadNamePrefix("future-")
                 .build();
+    }
+
+    @Bean
+    @FutureTaskExecutor
+    DelegatingSecurityContextExecutor futureDelegatingThreadPoolTaskExecutor(@Qualifier(FUTURE_TASK_EXECUTOR_BEAN_NAME) ThreadPoolTaskExecutor taskExecutor) {
+        return new DelegatingSecurityContextExecutor(taskExecutor);
     }
 
 }
