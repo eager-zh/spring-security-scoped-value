@@ -1,0 +1,14 @@
+.history
+
+# ios
+.DS_Store
+
+target
+
+### IntelliJ IDEA ###
+*.iws
+*.iml
+*.ipr
+
+# Log file
+*.log
